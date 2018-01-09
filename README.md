@@ -1,1 +1,1 @@
-# lobo-programming-challange
+# lob-programming-challange
