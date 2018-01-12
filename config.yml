@@ -1,0 +1,15 @@
+auth:
+  lob-key:
+  civic-key:
+civic-api:
+  url: https://www.googleapis.com/civicinfo/v2/representatives
+  roles:
+    - legislatorLowerBody
+    - judge
+lob-api:
+  description: Coding Test
+  color: false
+  file:
+  html_variables:
+    - message
+    - name

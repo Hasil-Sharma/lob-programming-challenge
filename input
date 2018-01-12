@@ -1,0 +1,11 @@
+{
+  "name": "Hasil Sharma",
+  "address_line1": "3440 Colorado Ave.",
+  "address_line2": "#108",
+  "address_city": "Boulder",
+  "address_zip": 80303,
+  "address_state": "Colorado",
+  "html_variables": {
+    "message": "This is a test letter for Lob's coding challenge. Thank you legislator."
+  }
+}
