@@ -59,10 +59,6 @@ civic-api:
   roles:
     - legislatorLowerBody
     - judge
-  .
-  .
-  .
-  Any paramater supported by Google Civic API
 lob-api:
   description: Coding Test
   color: false
@@ -70,51 +66,40 @@ lob-api:
   html_variables:
     - var1
     - var2
-    .
-    .
-    .
-    Variables as specified in html template (should be same as specified in "html_variables" in input
-  .
-  .
-  .
-  Any paramter supported by Lob API
 ```
 #### auth
 - lob-key : Specify lob api key (Required either here or via command line `lob-key`)
 - civic-key : Specify google civic api key (Required either here via command line `civic-key`)
 #### civic-api
 - url: URL to use for google civic api (Optional: Defaults to https://www.googleapis.com/civicinfo/v2/representatives)
-- Any other parameter and values as supported by Google Civic API. All the parameter with corresponding values will be
+- Any other parameter and values as supported by Google Civic API can be added. All the parameter with corresponding values will be
 used to make request
 - Please do not change `field` parameter to anything else. Script might not work as expected
 #### lob-api
-- html_variables: list of variables to sent to assign `merge_variables`. Values of `var1`, `var2` are taken from `html_variables` 
-in input json
-- Any other parameter and values as supported by Lob API. All the parameter with corresponding values will be
+- html_variables: list of variables in html template. Values of `var1`, `var2` are taken from json corresponding to `html_variables` 
+in input json. If not specified value corresponding to key `message` is used from input json.
+- Any other parameter and values as supported by Lob API can be added. All the parameter with corresponding values will be
 used to make request
 
 ### Input file
 Input Json file with following schema:
 ```json
 {
-  "name": <name> (Required),
-  "address_line1": <Addr1> (Required),
-  "address_line2": <Addr2> (Optional),
-  "address_city": <City> (Required),
-  "address_zip": <Zip> (Required),
-  "address_state": <State> (Required),
+  "name": "name",
+  "address_line1": "addr1",
+  "address_line2": "addr2",
+  "address_city": "city",
+  "address_zip": "zip",
+  "address_state": "state",
   "html_variables": {
-      "var1": <var1>,
-      "var2": <var2>,
-      .
-      .
-      .
-      Should have atleast all the variables as mentiond in ``html_variables`` in configuration
+      "var1": "val1",
+      "var2": "val2"
   }
 }
 ```
-Note: 
-- In case of default html template only ``message`` variable is needed and it can be passed a direct key or subkey 
+Note:
+- Required keys: name, address_line1, address_city, address_zip, address_state
+- Mention all the variables that you want to merge with your template in `html_variables`, any variable mentioned which isn't
+a part of html template will be silently ignored
+- In case of default html template only ``message`` variable is needed and it can be passed a directly or as a part of  
 of ``html_variables`` in input json
-- In case extra variables are mentioned in ``html_variables`` in json they are simply ignored and only keys specified 
-in ``html_variables`` in configuration are passed to lob api 

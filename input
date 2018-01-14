@@ -5,7 +5,9 @@
   "address_city": "Boulder",
   "address_zip": 80303,
   "address_state": "Colorado",
+  "random_field" : "Some Value",
   "html_variables": {
-    "message": "This is a test letter for Lob's coding challenge. Thank you legislator."
+    "message": "This is a test letter for Lob's coding challenge. Thank you legislator.",
+    "name": "Random Name"
   }
 }

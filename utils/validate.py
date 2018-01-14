@@ -1,49 +1,79 @@
 import logging
+from jsonschema import validate
+import jsonschema
 
-logger = logging.getLogger( 'Validation' )
+logger = logging.getLogger('Validation')
+
+get_type_obj = lambda x: {"type": x}
 
 
 def validate_config(conf_dict, key):
-    def check_key(_conf_dict, _key, msg):
-        if _key not in _conf_dict:
-            logger.error( msg )
-            exit( 1 )
-
-    def check_extra_keys(msg, *args):
-        set_args = map( set, args )
-        diff = reduce( lambda x, y: x ^ y, set_args )
-        if len( diff ) != 0:
-            logger.error( msg, key, ", ".join( diff ) )
-            exit( 1 )
-
-    if key == 'auth':
-        # Check if keys and sub-key are present
-        possible_subkeys = ["civic-key", "lob-key"]
-
-        logger.info( "Checking for 'auth' specification" )
-        check_key( conf_dict, key, "civic-api key and lob-api key not specified properly. Please specify in"
-                                   " configuration file or pass via --civic-key and --lob-key" )
-
-        logger.info( "Checking for civic-api key specification" )
-        check_key( conf_dict["auth"], possible_subkeys[0], "civic-api key not specified. Please specify it "
-                                                           "in configuration file or pass via --civic-key" )
-
-        logger.info( "Checking for lob-api key specification" )
-        check_key( conf_dict["auth"], possible_subkeys[1], "lob-api key not specified. Please specify it in "
-                                                           "configuration file or pass via --lob-key" )
-
-        # Checking for extra key specification
-        logger.info( "Checking for extra keys specified in configuration file" )
-        check_extra_keys( "Unknown key(s) specified in %s: %s", possible_subkeys, conf_dict["auth"].keys() )
+    if key == "auth":
+        schema = {
+            "type": "object",
+            "properties": {
+                "civic-key": get_type_obj("string"),
+                "lob-key": get_type_obj("string")
+            },
+            "required": ["civic-key", "lob-key"]
+        }
+        try:
+            validate(conf_dict, schema)
+        except jsonschema.exceptions.ValidationError as e:
+            logger.error("Error is authentication keys: %s", e.message)
+            exit(1)
+    elif key == "civic-api":
+        schema = {
+            "type": "object",
+            "properties": {
+                "url": get_type_obj("string"),
+                "key": get_type_obj("string"),
+                "fields": get_type_obj("string"),
+                "levels": get_type_obj("array"),
+                "roles": {
+                    "type": "array",
+                    "minItems": 1
+                }
+            }
+        }
+        try:
+            validate(conf_dict, schema)
+        except jsonschema.exceptions.ValidationError as e:
+            logger.error("Error is civic-api configurations: %s", e.message)
+            exit(1)
+    elif key == "lob-api":
+        schema = {
+            "type": "object",
+            "properties": {
+                "file": get_type_obj("string"),
+                "color": get_type_obj("bool"),
+                "description": get_type_obj("string"),
+                "html_variables": get_type_obj("array")
+            }
+        }
+        try:
+            validate(conf_dict, schema)
+        except jsonschema.exceptions.ValidationError as e:
+            logger.error("Error in lob-api configurations: %s", e.message)
 
 
 def validate_input(input_dict):
-    logger.info( "Validating Input File" )
-
-    def checker(key):
-        if key not in input_dict:
-            logger.error( "Required Field not not specified in input: %s", key )
-            exit( 1 )
-
-    required_variables = ["name", "address_line1", "address_city", "address_state", "address_zip"]
-    map( checker, required_variables )
+    logger.info("Validating Input File")
+    json_schema = {
+        "type": "object",
+        "properties": {
+            "name": get_type_obj("string"),
+            "address_line1": get_type_obj("string"),
+            "address_line2": get_type_obj("string"),
+            "address_city": get_type_obj("string"),
+            "address_state": get_type_obj("string"),
+            "address_zip": get_type_obj(["string", "integer"]),
+            "html_variables": get_type_obj("object")
+        },
+        "required": ["name", "address_line1", "address_city", "address_state", "address_zip", "html_variables"]
+    }
+    try:
+        validate(input_dict, json_schema)
+    except jsonschema.exceptions.ValidationError as e:
+        logger.error("Error in input specified: %s", e.message)
+        exit(1)
